@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Купить билет на соревнование</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+        .indent {
+            margin-left: 30px;
+            margin-right: 30px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="general :: page-header"> </div>
+
+<div class="indent">
+    <form method="get" action="/boughtTicket">
+
+        <label for="chooseTypeButton">
+            Тип билета:
+            <span th:if="${seat == null}">не указан.</span>
+            <span th:if="${seat != null}" th:text="${seat.getType()}"></span>
+        </label>
+        <a th:href="'/ticketTypes?competitionId=' + ${competition.getId()}" id="chooseTypeButton">Выбрать тип билета</a>
+        <br>
+
+        <label th:if="${seat != null}" for="seatsAmount" th:text="'Количество мест (не больше ' + ${seat.getAmount()} + ')'"></label>
+        <input th:if="${seat != null}" type="text" id="seatsAmount" name="amount" required><br>
+        <input th:if="${seat != null}" type="hidden" id="seatId" name="seatId" required th:value="${seat.getId()}">
+
+        <input id="submitButton" type="submit" value="Купить" class="btn btn-primary">
+    </form><br>
+</div>
+
+<div th:replace="general :: site-script"></div>
+
+</body>
+</html>

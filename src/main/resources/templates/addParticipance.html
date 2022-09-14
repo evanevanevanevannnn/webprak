@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Добавить участие в команде</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+        .indent {
+            margin-left: 30px;
+            margin-right: 30px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="general :: page-header"> </div>
+
+<div class="indent">
+    <form method="post" action="/saveParticipance">
+
+        <input type="hidden" name="sportsmanId" th:value="${sportsmanId}">
+        <input type="hidden" name="teamId" th:value="${teamId}">
+
+        <label for="partStart">Начало участия:</label>
+        <input type="text" id="partStart" name="partStart" required><br><br>
+
+        <label for="partFinish">Конец участия:</label>
+        <input type="text" id="partFinish" name="partFinish" required><br><br>
+
+        <label for="chooseTeamButton">
+            Команда:
+            <span th:if="${teamId == null}">нет.</span>
+            <span th:if="${teamId != null}" th:text="${teamService.getById(teamId).getName()}"></span>
+        </label>
+        <a th:href="'/teams?addButton=false&backLink=' + ${backLink}" id="chooseTeamButton">Сменить команду.</a>
+        <br><br>
+
+        <input id="submitButton" type="submit" value="Сохранить" class="btn btn-primary">
+    </form>
+</div>
+
+<div th:replace="general :: site-script"></div>
+
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+        .indent {
+            margin-left: 30px;
+            margin-right: 30px;
+            margin-top: 20px;
+        }
+    </style>
+    <title>Информация о соревновании</title>
+</head>
+
+<body>
+<div th:replace="general :: page-header"></div>
+
+<div class="indent">
+    <div id="competitionInfo">
+        <h4 th:text="${competition.getTournament()}"></h4>
+        <p th:text="'Название турнира: ' + ${competition.getTournament()}"></p>
+        <p th:if="${competition.getComp_date() != null}"
+           th:text="'Дата соревнования: ' + ${competition.getComp_date()}"></p>
+        <p th:if="${competition.getVenue() != null}" th:text="'Место проведения: ' + ${competition.getVenue()}"></p>
+        <p th:text="'Вид спорта: ' + ${competition.getSport().getSport_name()}"></p>
+        <p>
+        <table class="table table-bordered table-warning">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col"> Участники:</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${competition.getSport().getIs_team_sport()}"
+                th:each="opponent : ${teamOpponents}">
+                <td><a th:href="'/team?teamId=' + ${opponent.getTeam().getId()}"
+                       th:text="${opponent.getTeam().getName()}"></a></td>
+                <td>
+                    <form method="get" action="/deleteOpponent">
+                        <input id="submitButtonDeleteTeam" type="submit" value="Удалить участника соревнования." class="btn btn-primary">
+                        <input type="hidden" name="competitionId" th:value="${competition.getId()}">
+                        <input type="hidden" name="teamId" th:value="${opponent.getTeam().getId()}">
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${!competition.getSport().getIs_team_sport()}"
+                th:each="opponent : ${sportsmanOpponents}">
+                <td><a th:href="'/sportsman?sportsmanId=' + ${opponent.getPerson().getId()}"
+                       th:text="${opponent.getPerson().getName()}"></a></td>
+                <td>
+                    <form method="get" action="/deleteOpponent">
+                        <input id="submitButtonDeletePerson" type="submit" value="Удалить участника соревнования." class="btn btn-primary">
+                        <input type="hidden" name="competitionId" th:value="${competition.getId()}">
+                        <input type="hidden" name="sportsmanId" th:value="${opponent.getPerson().getId()}">
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${competition.getSport().getIs_team_sport()}">
+                <td>
+                    <form method="get" action="/teams">
+                        <input id="submitButtonAddTeam" type="submit" value="Добавить участника соревнования." class="btn btn-primary">
+                        <input type="hidden" name="addButton" th:value="${false}">
+                        <input type="hidden" name="backLink" th:value="'/competition?competitionId=' + ${competition.getId()} + '&'">
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${!competition.getSport().getIs_team_sport()}">
+                <td>
+                    <form method="get" action="/sportsmans">
+                        <input id="submitButtonAddPerson" type="submit" value="Добавить участника соревнования." class="btn btn-primary">
+                        <input type="hidden" name="addButton" th:value="${false}">
+                        <input type="hidden" name="backLink" th:value="'/competition?competitionId=' + ${competition.getId()} + '&'">
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        </p>
+
+        <p th:text="'Наличие свободных мест:'">
+        <table class="table table-bordered table-warning">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col"> Категория мест</th>
+                <th scope="col"> Количество</th>
+                <th scope="col"> Стоимость</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="seat : ${seatsDAO.getCompetitionSeats(competition)}">
+                <td><span th:text="${seat.getType()}"></span></td>
+                <td><span th:text="${seat.getAmount()}"></span></td>
+                <td><span th:text="${seat.getPrice()}"></span></td>
+                <td><a th:href="'/deleteSeats?competitionId=' + ${competition.getId()} + '&seatsId=' + ${seat.getId()}">Удалить места данной категории.</a></td>
+            </tr>
+            <tr>
+                <td>
+                    <form method="get" action="/addSeats">
+                        <input id="addSeatsButton" type="submit" value="Добавить свободные места." class="btn btn-primary">
+                        <input type="hidden" name="competitionId" th:value="${competition.getId()}">
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        </p>
+        <p id="score" th:if="${competition.getScore() != null}" th:text="'Счет: ' + ${competition.getScore()}"></p>
+
+    </div>
+
+    <!--edit delete order button group-->
+    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="btn-group mr-2" role="group" aria-label="First group">
+            <form style="margin-right: 30px" method="get" action="/editCompetition">
+                <input type="hidden" name="competitionId" th:value="${competition.getId()}">
+                <button id="editButton" type="submit" class="btn btn-secondary">Редактировать информацию о
+                    соревновании
+                </button>
+            </form>
+            <form style="margin-right: 30px" method="post" action="/removeCompetition">
+                <input type="hidden" name="competitionId" th:value="${competition.getId()}"/>
+                <button id="deleteButton" type="submit" class="btn btn-secondary">Удалить соревнование из базы</button>
+            </form>
+            <form th:if="${seatsDAO.getCompetitionSeats(competition).size() > 0}" method="get" action="/buyTicket">
+                <input type="hidden" name="competitionId" th:value="${competition.getId()}"/>
+                <button id="buyTicketButton" type="submit" class="btn btn-secondary">Купить билеты на соревнование
+                </button>
+            </form>
+        </div>
+    </div>
+    <!--end of button group-->
+
+</div>
+
+<div th:replace="general :: site-script"></div>
+
+</body>
+</html>
