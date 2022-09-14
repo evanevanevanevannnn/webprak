@@ -61,10 +61,10 @@ public class WebTest {
 
     @Test
     void addSportsman() {
-        System.setProperty("webdriver.chrome.driver","C:\\Users\\sukho\\Downloads\\chromedriver_win32\\chromedriver.exe");
         ChromeDriver driver = new ChromeDriver();
         driver.get("http://localhost:8080/sportsmans?addButton=true&backLink=/sportsman?");
         assertEquals("Спортсмены", driver.getTitle());
+
         WebElement addSportsman = driver.findElement(By.id("addSportsmanButton"));
         addSportsman.click();
         driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
@@ -79,14 +79,10 @@ public class WebTest {
         WebElement placeInfo = driver.findElement(By.id("personInfo"));
         List<WebElement> cells = placeInfo.findElements(By.tagName("p"));
 
-        assertEquals(cells.get(0).getText(), "Имя: Тестовый спортсмен");
-        assertEquals(cells.get(1).getText(), "Дата рождения: Тестовая дата рождения");
+        assertEquals("Имя: Тестовый спортсмен", cells.get(0).getText());
+        assertEquals("Дата рождения: Тестовая дата рождения", cells.get(1).getText());
 
-        WebElement teamPartHistory = driver.findElement(By.tagName("table"));
-        List<WebElement> rows = teamPartHistory.findElements(By.tagName("tr"));
-        WebElement lastRow = rows.get(rows.size() - 1);
-
-        lastRow.findElement(By.tagName("a")).click();
+        driver.findElement(By.id("submitButtonAdd")).click();
         driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
 
         assertEquals("Добавить участие в команде", driver.getTitle());
@@ -106,15 +102,18 @@ public class WebTest {
         assertEquals("Информация о спортсмене",driver.getTitle());
 
         driver.findElement(By.id("deleteButton")).click();
+
+        assertEquals("Спортсмены", driver.getTitle());
+
         driver.quit();
     }
 
     @Test
     void addSport() {
-        System.setProperty("webdriver.chrome.driver","C:\\Users\\sukho\\Downloads\\chromedriver_win32\\chromedriver.exe");
         ChromeDriver driver = new ChromeDriver();
         driver.get("http://localhost:8080/sports?addButton=true&backLink=");
         assertEquals("Виды спорта", driver.getTitle());
+
         WebElement addSportButton = driver.findElement(By.id("addSportButton"));
         addSportButton.click();
         driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
@@ -148,7 +147,7 @@ public class WebTest {
         assertEquals("Тестовый командный спорт", newSportInfo.get(0).findElement(By.tagName("span")).getText());
         assertEquals("да", newSportInfo.get(1).findElement(By.tagName("span")).getText());
 
-        newSportInfo.get(2).findElement(By.tagName("a")).click();
+        newSportInfo.get(2).findElement(By.id("removeSportButton")).click();
         driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
 
         assertEquals("Виды спорта", driver.getTitle());
@@ -158,9 +157,12 @@ public class WebTest {
 
     @Test
     void getTeamInfo() {
-        System.setProperty("webdriver.chrome.driver","C:\\Users\\sukho\\Downloads\\chromedriver_win32\\chromedriver.exe");
         ChromeDriver driver = new ChromeDriver();
-        driver.get("http://localhost:8080/team?teamId=1");
+        driver.get("http://localhost:8080/teams?addButton=false&backLink=team?");
+        assertEquals("Команды", driver.getTitle());
+
+        driver.findElement(By.tagName("tbody")).findElement(By.tagName("a")).click();
+        driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
         assertEquals("Информация о команде", driver.getTitle());
 
         WebElement teamInfo = driver.findElement(By.id("teamInfo"));
@@ -169,9 +171,8 @@ public class WebTest {
         assertEquals("Название: team 1", cells.get(0).getText());
         assertEquals("Тренер: coach 1", cells.get(1).getText());
 
-        List<WebElement> tables = driver.findElements(By.tagName("table"));
-        WebElement playersTable = tables.get(0);
-        WebElement competitionsHistory = tables.get(1);
+        WebElement playersTable = driver.findElement(By.id("currentPlayers"));
+        WebElement competitionsHistory = driver.findElement(By.id("compHistory"));
 
         List<WebElement> teamPlayers = playersTable.findElements(By.tagName("tr"));
         WebElement firstPlayer = null;
@@ -233,43 +234,61 @@ public class WebTest {
 
     @Test
     void byTickets() {
-        System.setProperty("webdriver.chrome.driver","C:\\Users\\sukho\\Downloads\\chromedriver_win32\\chromedriver.exe");
         ChromeDriver driver = new ChromeDriver();
-        driver.get("http://localhost:8080/competition?competitionId=1");
+        driver.get("http://localhost:8080/competitions");
+        assertEquals("Соревнования", driver.getTitle());
+
+        driver.findElement(By.id("venue")).sendKeys("venue 4");
+        driver.findElement(By.id("submitButton")).click();
+        driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
+        assertEquals("Соревнования", driver.getTitle());
+
+        driver.findElements(By.tagName("a")).get(8).click();
+        driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
         assertEquals("Информация о соревновании", driver.getTitle());
 
         WebElement tournament = driver.findElement(By.tagName("p"));
-        assertEquals("Название турнира: tournament 1", tournament.getText());
+        assertEquals("Название турнира: tournament 4", tournament.getText());
 
         driver.findElement(By.id("editButton")).click();
         driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
 
-        driver.findElement(By.id("price")).clear();
-        driver.findElement(By.id("price")).sendKeys("5,2000,3000");
+        driver.findElement(By.id("venue")).clear();
+        driver.findElement(By.id("venue")).sendKeys("venue 3");
         driver.findElement(By.id("submitButton")).click();
         driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
 
-        assertEquals("Стоимость билетов каждой категории: 5,2000,3000", driver.findElement(By.id("price")).getText());
+        assertEquals("Место проведения: venue 3", driver.findElement(By.id("venue")).getText());
+
+        driver.findElement(By.id("addSeatsButton")).click();
+        driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
+
+        assertEquals("Добавить свободные места", driver.getTitle());
+        driver.findElement(By.id("type")).sendKeys("Ultra premium");
+        driver.findElement(By.id("amount")).sendKeys("1");
+        driver.findElement(By.id("price")).sendKeys("10");
+        driver.findElement(By.id("submitButton")).click();
+        driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
+        assertEquals("Информация о соревновании", driver.getTitle());
 
         driver.findElement(By.id("buyTicketButton")).click();
         driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
-
         assertEquals("Купить билет на соревнование", driver.getTitle());
-        driver.findElement(By.id("firstCatSeats")).sendKeys("20");
-        driver.findElement(By.id("passportData")).sendKeys("0101 000000");
+
+        driver.findElement(By.id("chooseTypeButton")).click();
+        driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
+
+        driver.findElements(By.tagName("a")).get(7).click();
+        driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
+
+        driver.findElement(By.id("seatsAmount")).sendKeys("1");
         driver.findElement(By.id("submitButton")).click();
         driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
-
         assertEquals("Билет куплен", driver.getTitle());
-        assertEquals("Общая стоимость билетов: 100", driver.findElement(By.id("price")).getText());
 
-        List<WebElement> links = driver.findElements(By.tagName("a"));
-        WebElement lastLink = links.get(links.size() - 1);
-        lastLink.click();
+        driver.findElements(By.tagName("a")).get(7).click();
         driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
-
         assertEquals("Информация о соревновании", driver.getTitle());
-        assertEquals("Количество свободных мест каждой категории: 0,20,20", driver.findElement(By.id("seats")).getText());
 
         driver.quit();
     }

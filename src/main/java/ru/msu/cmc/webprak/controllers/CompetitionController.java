@@ -274,11 +274,7 @@ public class CompetitionController {
             return "errorPage";
         }
 
-        Seats seat = new Seats();
-        seat.setCompetition(competition);
-        seat.setType(type);
-        seat.setAmount(amount);
-        seat.setPrice(price);
+        Seats seat = new Seats(null, competition, type, amount, price);
 
         seatsDAO.save(seat);
 
@@ -416,8 +412,12 @@ public class CompetitionController {
             return "errorPage";
         }
 
-        seat.setAmount(seat.getAmount() - amount);
-        seatsDAO.update(seat);
+        if (seat.getAmount().equals(amount)) {
+            seatsDAO.delete(seat);
+        } else {
+            seat.setAmount(seat.getAmount() - amount);
+            seatsDAO.update(seat);
+        }
 
         model.addAttribute("competition", seat.getCompetition());
         model.addAttribute("totalPrice", seat.getPrice() * amount);

@@ -20,11 +20,11 @@
 <div class="indent">
     <div id="competitionInfo">
         <h4 th:text="${competition.getTournament()}"></h4>
-        <p th:text="'Название турнира: ' + ${competition.getTournament()}"></p>
-        <p th:if="${competition.getComp_date() != null}"
+        <p id="tournament" th:text="'Название турнира: ' + ${competition.getTournament()}"></p>
+        <p id="compDate" th:if="${competition.getComp_date() != null}"
            th:text="'Дата соревнования: ' + ${competition.getComp_date()}"></p>
-        <p th:if="${competition.getVenue() != null}" th:text="'Место проведения: ' + ${competition.getVenue()}"></p>
-        <p th:text="'Вид спорта: ' + ${competition.getSport().getSport_name()}"></p>
+        <p id="venue" th:if="${competition.getVenue() != null}" th:text="'Место проведения: ' + ${competition.getVenue()}"></p>
+        <p id="sport" th:text="'Вид спорта: ' + ${competition.getSport().getSport_name()}"></p>
         <p>
         <table class="table table-bordered table-warning">
             <thead class="thead-dark">

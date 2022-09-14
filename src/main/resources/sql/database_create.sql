@@ -25,7 +25,7 @@ CREATE TABLE competition (
     competition_id  serial      PRIMARY KEY,
     sport_id        integer     REFERENCES sports(sport_id) ON DELETE CASCADE,
     tournament      text,
-    comp_date       text        NOT NULL,
+    comp_date       text,
     venue           text,
     score           text
 );

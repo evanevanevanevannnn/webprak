@@ -39,10 +39,10 @@ public class CompetitionDAOImpl extends CommonDAOImpl<Competition, Long> impleme
         List<Competition> res = new ArrayList<>();
         for (Competition competition : getAll()) {
 
-            if ((filter.getTournament() == null || competition.getTournament().equals(filter.getTournament())) &&
-                    (filter.getCompDate() == null || competition.getComp_date().equals(filter.getCompDate())) &&
-                    (filter.getVenue() == null || competition.getVenue().equals(filter.getVenue())) &&
-                    (filter.getSportId() == null || competition.getSport().getId().equals(filter.getSportId())) &&
+            if ((filter.getTournament() == null || filter.getTournament().equals(competition.getTournament())) &&
+                    (filter.getCompDate() == null || filter.getCompDate().equals(competition.getComp_date())) &&
+                    (filter.getVenue() == null || filter.getVenue().equals(competition.getVenue())) &&
+                    (filter.getSportId() == null || filter.getSportId().equals(competition.getSport().getId())) &&
                     (filter.getMinimalAmount() == null || filter.getMinimalAmount() <= seatsDAO.getSeatsAmount(competition)) &&
                     (filter.getMinimalPrice() == null || filter.getMinimalPrice() >= seatsDAO.getMinimalPrice(competition))) {
                 res.add(competition);

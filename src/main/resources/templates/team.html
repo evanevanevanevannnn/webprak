@@ -24,7 +24,7 @@
         <p th:if="${team.getCoach() != null}" th:text="'Тренер: ' + ${team.getCoach()}"></p>
 
         <p>Текущий состав команды:&nbsp
-            <table class="table table-bordered table-warning">
+            <table class="table table-bordered table-warning" id="currentPlayers">
                 <thead class="thead-dark">
                 <tr>
                     <th scope="col"> Имя игрока</th>
@@ -47,7 +47,7 @@
         </p><br>
 
         <p>История участия в соревнованиях:&nbsp
-            <table class="table table-bordered table-warning">
+            <table class="table table-bordered table-warning" id="compHistory">
                 <thead class="thead-dark">
                 <tr>
                     <th scope="col"> Команда противника</th>

@@ -40,31 +40,28 @@ public class CompetitionDAOTest {
 
     @Test
     void testGetByFilter() {
-//        CompetitionDAO.Filter firstFilter = CompetitionDAO.Filter.builder()
-//                .tournament("tournament 1")
-//                .venue("venue 1")
-//                .build();
-//
-//        List<Competition> firstFilterGet = competitionDAO.getByFilter(firstFilter);
-//        assertEquals(firstFilterGet.size(), 1);
-//        assertEquals(firstFilterGet.get(0).getComp_date(), "01.01.2010");
+        CompetitionDAO.Filter firstFilter = CompetitionDAO.Filter.builder()
+                .tournament("tournament 1")
+                .venue("venue 1")
+                .build();
 
-//        CompetitionDAO.Filter secondFilter = CompetitionDAO.Filter.builder()
-//                .tournament("tournament 4")
-//                .seats("50,50,50")
-//                .build();
-//
-//        List<Competition> secondFilterGet = competitionDAO.getByFilter(secondFilter);
-//        assertEquals(secondFilterGet.size(), 0);
-//
-//        CompetitionDAO.Filter thirdFilter = CompetitionDAO.Filter.builder()
-//                .venue("venue 5")
-//                .seats("25,25,0")
-//                .build();
+        List<Competition> firstFilterGet = competitionDAO.getByFilter(firstFilter);
+        assertEquals(1, firstFilterGet.size());
+        assertNull(firstFilterGet.get(0).getComp_date());
 
-//        List<Competition> thirdFilterGet = competitionDAO.getByFilter(thirdFilter);
-//        assertEquals(thirdFilterGet.size(), 1);
-//        assertEquals(thirdFilterGet.get(0).getComp_date(), "01.01.2025");
+        CompetitionDAO.Filter secondFilter = CompetitionDAO.Filter.builder()
+                .minimalAmount(100L)
+                .build();
+
+        List<Competition> secondFilterGet = competitionDAO.getByFilter(secondFilter);
+        assertEquals(3, secondFilterGet.size());
+
+        CompetitionDAO.Filter thirdFilter = CompetitionDAO.Filter.builder()
+                .minimalPrice(1000L)
+                .build();
+
+        List<Competition> thirdFilterGet = competitionDAO.getByFilter(thirdFilter);
+        assertEquals(3, thirdFilterGet.size());
     }
 
     @Test
@@ -84,12 +81,12 @@ public class CompetitionDAOTest {
 
     @Test
     void testDeleteById() {
-//        Long shouldBeDeleted = 2L;
-//
-//        competitionDAO.deleteById(shouldBeDeleted);
-//
-//        Competition competition = competitionDAO.getById(shouldBeDeleted);
-//        assertNull(competition);
+        Long shouldBeDeleted = 2L;
+
+        competitionDAO.deleteById(shouldBeDeleted);
+
+        Competition competition = competitionDAO.getById(shouldBeDeleted);
+        assertNull(competition);
     }
 
     @BeforeEach
@@ -183,6 +180,12 @@ public class CompetitionDAOTest {
 
             session.createSQLQuery("TRUNCATE sportsmans_competitions RESTART IDENTITY CASCADE;").executeUpdate();
             session.createSQLQuery("ALTER SEQUENCE sportsmans_competitions_sport_part_id_seq RESTART WITH 1;").executeUpdate();
+
+            session.createSQLQuery("TRUNCATE sports RESTART IDENTITY CASCADE;").executeUpdate();
+            session.createSQLQuery("ALTER SEQUENCE sports_sport_id_seq RESTART WITH 1;").executeUpdate();
+
+            session.createSQLQuery("TRUNCATE seats RESTART IDENTITY CASCADE;").executeUpdate();
+            session.createSQLQuery("ALTER SEQUENCE seats_seats_id_seq RESTART WITH 1;").executeUpdate();
 
             session.createSQLQuery("TRUNCATE competition RESTART IDENTITY CASCADE;").executeUpdate();
             session.createSQLQuery("ALTER SEQUENCE competition_competition_id_seq RESTART WITH 1;").executeUpdate();
