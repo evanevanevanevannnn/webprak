@@ -40,7 +40,7 @@ public class CompetitionDAOTest {
 
     @Test
     void testGetByFilter() {
-        CompetitionDAO.Filter firstFilter = CompetitionDAO.Filter.builder()
+        CompetitionDAO.Filter firstFilter = CompetitionDAO.getFilterBuilder()
                 .tournament("tournament 1")
                 .venue("venue 1")
                 .build();
@@ -49,14 +49,14 @@ public class CompetitionDAOTest {
         assertEquals(1, firstFilterGet.size());
         assertNull(firstFilterGet.get(0).getComp_date());
 
-        CompetitionDAO.Filter secondFilter = CompetitionDAO.Filter.builder()
+        CompetitionDAO.Filter secondFilter = CompetitionDAO.getFilterBuilder()
                 .minimalAmount(100L)
                 .build();
 
         List<Competition> secondFilterGet = competitionDAO.getByFilter(secondFilter);
         assertEquals(3, secondFilterGet.size());
 
-        CompetitionDAO.Filter thirdFilter = CompetitionDAO.Filter.builder()
+        CompetitionDAO.Filter thirdFilter = CompetitionDAO.getFilterBuilder()
                 .minimalPrice(1000L)
                 .build();
 
@@ -66,17 +66,54 @@ public class CompetitionDAOTest {
 
     @Test
     void testPlayerCompetitions() {
-//        List<Sportsmans_competitions> firstSportsmansCompetitions = sportsmans_competitionsDAO.getSportsmanCompetitions(sportsmanDAO.getById(1L));
-//        assertEquals(firstSportsmansCompetitions.size(), 1);
-//
-//        List<Sportsmans_competitions> firstCompetitionPlayers = sportsmans_competitionsDAO.getCompetitionSportsmans(competitionDAO.getById(1L));
-//        assertEquals(firstCompetitionPlayers.size(), 2);
-//
-//        List<Team_competitions> secondTeamCompetitions = team_competitionsDAO.getTeamCompetitions(teamDAO.getById(2L));
-//        assertEquals(secondTeamCompetitions.size(), 1);
-//
-//        List<Team_competitions> secondCompetitionPLayers = team_competitionsDAO.getCompetitionTeams(competitionDAO.getById(2L));
-//        assertEquals(secondCompetitionPLayers.size(), 2);
+        Sportsman firstSportsman = sportsmanDAO.getById(1L);
+
+        List<Sportsmans_competitions> firstSportsmanCompetitions =
+                (List<Sportsmans_competitions>)sportsmans_competitionsDAO.getSportsmanCompetitions(firstSportsman);
+        assertEquals(1, firstSportsmanCompetitions.size());
+        assertEquals(1L, firstSportsmanCompetitions.get(0).getCompetition().getId());
+
+        List<Sportsmans_competitions> firstSportsmanOpponents =
+                (List<Sportsmans_competitions>)sportsmans_competitionsDAO.getSportsmanOpponents(firstSportsman);
+        assertEquals(1, firstSportsmanOpponents.size());
+        assertEquals(2L, firstSportsmanOpponents.get(0).getPerson().getId());
+
+        Competition firstSportsmanCompetition = firstSportsmanCompetitions.get(0).getCompetition();
+        List<Sportsmans_competitions> firstCompetitionOpponents =
+                (List<Sportsmans_competitions>)sportsmans_competitionsDAO.getCompetitionSportsmans(firstSportsmanCompetition);
+        assertEquals(2, firstCompetitionOpponents.size());
+
+        sportsmans_competitionsDAO.deleteCompetitionSportsman(firstSportsmanCompetition, sportsmanDAO.getById(2L));
+        assertEquals(0, sportsmans_competitionsDAO.getSportsmanCompetitions(sportsmanDAO.getById(2L)).size());
+
+        sportsmans_competitionsDAO.deleteCompetitionSportsmans(firstSportsmanCompetition);
+        assertEquals(0, sportsmans_competitionsDAO.getCompetitionSportsmans(firstSportsmanCompetition).size());
+    }
+
+    @Test
+    void testTeamCompetitions() {
+        Team firstTeam = teamDAO.getById(1L);
+
+        List<Team_competitions> firstTeamCompetitions =
+                (List<Team_competitions>)team_competitionsDAO.getTeamCompetitions(firstTeam);
+        assertEquals(2, firstTeamCompetitions.size());
+        assertEquals(2L, firstTeamCompetitions.get(0).getCompetition().getId());
+
+        List<Team_competitions> firstTeamOpponents =
+                (List<Team_competitions>)team_competitionsDAO.getTeamOpponents(firstTeam);
+        assertEquals(2, firstTeamOpponents.size());
+        assertEquals(2L, firstTeamOpponents.get(0).getTeam().getId());
+
+        Competition firstTeamCompetition = firstTeamCompetitions.get(0).getCompetition();
+        List<Team_competitions> firstCompetitionOpponents =
+                (List<Team_competitions>)team_competitionsDAO.getCompetitionTeams(firstTeamCompetition);
+        assertEquals(2, firstCompetitionOpponents.size());
+
+        team_competitionsDAO.deleteCompetitionTeam(firstTeamCompetition, teamDAO.getById(2L));
+        assertEquals(0, team_competitionsDAO.getTeamCompetitions(teamDAO.getById(2L)).size());
+
+        team_competitionsDAO.deleteCompetitionTeams(firstTeamCompetition);
+        assertEquals(0, team_competitionsDAO.getCompetitionTeams(firstTeamCompetition).size());
     }
 
     @Test
