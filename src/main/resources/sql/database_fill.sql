@@ -38,9 +38,13 @@ INSERT INTO competition(sport_id, tournament, comp_date, venue, score) VALUES
     (4, 'tournament 4', '01.01.2017', 'venue 4', '91:57'),
     (5, 'tournament 5', '01.01.2024', 'venue 5', NULL);
 
-INSERT INTO seats(seats_id, competition_id, seats_type, seats_amount, seats_price) VALUES
-    (1, 1,  'normal', 20,  500),
-    (2, 1, 'premium', 20, 1000);
+INSERT INTO seats(competition_id, seats_type, seats_amount, seats_price) VALUES
+     (1,  'normal', 100,  500),
+     (1, 'premium', 50, 1000),
+     (2,  'normal', 100,  1000),
+     (2, 'premium', 50, 2000),
+     (3,  'normal', 100,  1500),
+     (3, 'premium', 50, 3000);
 
 INSERT INTO team_competitions (team_id, competition_id) VALUES
     (1, 2),
